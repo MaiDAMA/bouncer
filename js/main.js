@@ -44,6 +44,9 @@
   var Score = Game.Score;
   Ball.introduce();
 
+    //Set contains all ball with colising
+  var removeElement = new Set();
+
   // Initialize sprites
   var padNorth = Pad.padNorth = new Pad("pad_north");
   var padSouth = Pad.padSouth = new Pad("pad_south");
@@ -300,6 +303,85 @@
     }
 
     // -------- Write to DOM -------------
+
+ function detectingCollisionWithBall()
+  {
+    var taille=Ball.balls.length;
+    for(var i=0;i<taille;i++)
+    {   
+        /******BalleNow*********/
+      var ballNow=Ball.balls[i];
+      var ballNow_rayon = ballNow.width / 2;
+      var ballNowX = ballNow.x + ballNow_rayon;
+      var ballNowY = ballNow.y + ballNow_rayon;
+      
+      for( var j = i+1;j < taille ; j++ )
+      {
+        /******BallNow et Ball******/
+    var ball=Ball.balls[j];
+        var ball_rayon = ball.width/2;
+        var ballX = ball.x + ball_rayon;
+        var ballY = ball.y + ball_rayon;
+   
+        var distanceX = ballNowX - ballX;
+        var distanceY = ballNowY - ballY;
+          
+        //calculated the distance with ballNow and ball
+        var distance = Math.sqrt ( Math.pow ( distanceX , 2 ) + Math.pow( distanceY , 2 ) );
+        var diametre = ballNow_rayon + ball_rayon;
+        var colorBallNow = ballNow.nextKind;
+        var colorBall = ball.nextKind;
+
+       //Calculated for detecting  collision with BallNow and ball
+      
+       if(distance < diametre && colorBallNow == colorBall)
+         {
+            removeElement.add(ballNow);
+            removeElement.add(ball);
+
+          }
+        
+        }
+
+      }
+  removeElementColisionSameColor(removeElement);
+   
+  }
+
+   
+ //Remove balls collising with the same color should destroy each other
+    function removeElementColisionSameColor(removeElement){
+      var indexElementFirst = 1;
+
+      for (var ball of removeElement) {
+       
+       for( var ballAjoute in ball.toRemove)
+        {
+
+          if( ball.id==ballAjoute.id)
+          {
+            indexElementFirst=0;
+            console.log(ballAjoute);
+          }
+        }
+            
+        if(indexElementFirst==0)
+        {
+          Ball.toRemove.push(ball);
+       }
+  
+      }
+      //remove All ball in the Set removeElement
+      for (var ball of removeElement) 
+      {
+   
+        Ball.remove(ball);
+        
+      } 
+        
+    }
+   detectingCollisionWithBall();
+
 
     return true;
   };
